@@ -13,4 +13,9 @@ export const produtoService = {
     const response = await apiClient.post<ProdutoResponseDTO>("/api/v1/radar-licitacao/produtos", data);
     return response.data;
   },
+
+  buscarProduto: async (id: number): Promise<ProdutoResponseDTO> => {
+    const response = await apiClient.get<ProdutoResponseDTO>(`/api/v1/radar-licitacao/produtos/${id}`);
+    return response.data;
+  },
 };
