@@ -1,3 +1,5 @@
+import { mensagem } from "@/utils/teste";
+
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
@@ -5,7 +7,7 @@ export default function App() {
         Radar Licitações
       </h1>
       <p className="text-gray-700 text-lg mb-8">
-        Frontend configurado com sucesso!
+        {mensagem}
       </p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">

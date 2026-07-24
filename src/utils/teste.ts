@@ -1,0 +1,1 @@
+export const mensagem = "O alias está funcionando perfeitamente!";
