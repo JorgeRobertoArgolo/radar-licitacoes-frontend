@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { useListarProdutos } from "../hooks/useProdutos";
 import { ProdutoHeader } from "../components/ProdutoHeader";
 import { ProdutoTable } from "../components/ProdutoTable";
+import { NovoProdutoModal } from "../components/NovoProdutoModal";
 
 export default function ProdutosPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -10,6 +11,7 @@ export default function ProdutosPage() {
   // Estado local para a barra de pesquisa
   const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [page, setPage] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Solicitamos 100 itens apenas para que o filtro visual funcione bem localmente,
   // já que o backend não possui um endpoint de busca por nome nativo.
@@ -47,7 +49,7 @@ export default function ProdutosPage() {
 
   // Ação da página
   const handleAbrirModalNovoProduto = () => {
-    console.log("Abrir modal de criação! (A fazer)");
+    setIsModalOpen(true);
   };
 
   return (
@@ -63,6 +65,11 @@ export default function ProdutosPage() {
         isLoading={isLoading} 
         isError={isError} 
         onPageChange={(novaPag) => setPage(novaPag)} 
+      />
+
+      <NovoProdutoModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
       />
     </div>
   );
