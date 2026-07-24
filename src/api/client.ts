@@ -3,7 +3,7 @@ import type { ResultError } from '@/types/api';
 
 // Configuração base apontando para o backend Spring Boot local
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8081',
+  baseURL: import.meta.env.VITE_API_URL || '',
   headers: {
     'Content-Type': 'application/json',
   },
