@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Radar, Package, LayoutDashboard, Settings } from "lucide-react";
+import { Radar, Package, LayoutDashboard } from "lucide-react";
 
 export function Layout() {
   const location = useLocation();
@@ -37,14 +37,6 @@ export function Layout() {
                 <span>Catálogo de Produtos</span>
               </Link>
             </nav>
-            
-            {/* Ações (Perfil / Config) */}
-            <div className="flex items-center">
-              <button className="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-full hover:bg-slate-100">
-                <Settings size={20} />
-              </button>
-            </div>
-
           </div>
         </div>
       </header>

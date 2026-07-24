@@ -1,8 +1,12 @@
 import { Search, AlertTriangle, PackageSearch, TrendingDown, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useListarProdutos } from "@/modules/Produtos/hooks/useProdutos";
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
+
   // Vamos usar o hook existente apenas para extrair a métrica global (Total de Produtos da API)
   const { data, isLoading } = useListarProdutos(0, 1);
 
@@ -26,11 +30,25 @@ export default function HomePage() {
             <Search className="text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={24} />
           </div>
           <input 
-            type="text" 
+            type="text"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchValue.trim()) {
+                navigate(`/produtos?search=${encodeURIComponent(searchValue.trim())}`);
+              }
+            }}
             className="block w-full pl-12 pr-32 py-4 bg-slate-50 border border-slate-200 rounded-xl text-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all shadow-sm"
             placeholder="Ex: Amoxicilina 500mg, Asfalto..."
           />
-          <button className="absolute inset-y-2 right-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 rounded-lg font-medium transition-colors shadow-sm">
+          <button 
+            onClick={() => {
+              if (searchValue.trim()) {
+                navigate(`/produtos?search=${encodeURIComponent(searchValue.trim())}`);
+              }
+            }}
+            className="absolute inset-y-2 right-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 rounded-lg font-medium transition-colors shadow-sm cursor-pointer"
+          >
             Buscar
           </button>
         </div>
