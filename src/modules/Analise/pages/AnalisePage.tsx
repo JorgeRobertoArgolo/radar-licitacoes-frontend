@@ -1,12 +1,110 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft, Beaker, Loader2 } from "lucide-react";
+
+import { useBuscarProduto } from "@/modules/Produtos/hooks/useProdutos";
+import { useAnalisarProposta } from "../hooks/useAnalise";
+import { analiseSchema, type AnaliseFormData } from "../schema/analise.schema";
+import { AnaliseResultCard } from "../components/AnaliseResultCard";
+import type { AnalisePrecoResponseDTO } from "../types/analise.types";
 
 export default function AnalisePage() {
-  const { id } = useParams();
-  
+  const { id } = useParams<{ id: string }>();
+  const produtoId = Number(id);
+
+  const { data: produto, isLoading: isLoadingProduto } = useBuscarProduto(produtoId);
+  const { mutate: analisar, isPending, error: mutationError } = useAnalisarProposta(produtoId);
+
+  const [resultado, setResultado] = useState<AnalisePrecoResponseDTO | null>(null);
+  const [precoAnalisado, setPrecoAnalisado] = useState<number>(0);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AnaliseFormData>({
+    resolver: zodResolver(analiseSchema) as any,
+  });
+
+  const onSubmit = (data: any) => {
+    setResultado(null);
+    setPrecoAnalisado(data.precoProposto);
+    
+    analisar(data.precoProposto, {
+      onSuccess: (res) => {
+        setResultado(res);
+      }
+    });
+  };
+
+  if (isLoadingProduto) {
+    return <div className="p-12 text-center text-slate-500 font-medium">Iniciando ambiente de análise...</div>;
+  }
+
+  if (!produto) {
+    return <div className="p-12 text-center text-rose-500 font-medium">Produto não encontrado. (404)</div>;
+  }
+
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-orange-600">A Malha Fina (Análise)</h1>
-      <p className="text-gray-600 mt-2">Calculadora de sobrepreço para o Produto ID: {id}</p>
+    <div className="p-8 max-w-4xl mx-auto animate-in fade-in duration-300">
+      
+      {/* Cabeçalho */}
+      <div className="mb-8">
+        <Link to={`/produtos/${produto.id}`} className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-indigo-600 transition-colors mb-4 group cursor-pointer">
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span>Voltar ao painel do produto</span>
+        </Link>
+        <div className="flex items-center gap-3">
+          <div className="bg-indigo-100 p-3 rounded-xl text-indigo-700 shadow-sm">
+            <Beaker size={28} />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">A Malha Fina</h1>
+            <p className="text-slate-500 mt-1">Analisando proposta para: <strong>{produto.nome}</strong></p>
+          </div>
+        </div>
+      </div>
+
+      {/* Formulário de Input */}
+      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+        <h2 className="text-lg font-semibold text-slate-800 mb-6">Insira o valor da proposta em licitação</h2>
+        
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col md:flex-row gap-4 items-start">
+          <div className="flex-1 w-full relative">
+            <label className="block text-sm font-medium text-slate-700 mb-1">Preço Proposto (R$)</label>
+            <input
+              type="number"
+              step="0.01"
+              disabled={isPending}
+              {...register("precoProposto")}
+              className={`w-full px-4 py-3 rounded-xl border ${errors.precoProposto ? "border-rose-300 focus:ring-rose-100" : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-100"} bg-slate-50 focus:bg-white focus:outline-none focus:ring-4 transition-all text-slate-700 text-lg font-medium`}
+              placeholder="Ex: 12.50"
+            />
+            {errors.precoProposto && <p className="mt-1.5 text-sm font-medium text-rose-500 absolute">{errors.precoProposto?.message as string}</p>}
+            {mutationError && !mutationError.errosDeCampo && (
+              <p className="mt-1.5 text-sm font-medium text-rose-500 absolute">{mutationError.mensagem}</p>
+            )}
+          </div>
+          
+          <div className="pt-6 w-full md:w-auto">
+            <button 
+              type="submit" 
+              disabled={isPending}
+              className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3.5 rounded-xl font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer h-[52px] border border-indigo-700 disabled:opacity-70"
+            >
+              {isPending ? <Loader2 size={20} className="animate-spin" /> : <Beaker size={20} />}
+              <span>{isPending ? "Processando..." : "Rodar Algoritmo"}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Resultado da Análise */}
+      {resultado && (
+        <AnaliseResultCard resultado={resultado} precoAnalisado={precoAnalisado} />
+      )}
     </div>
   );
 }
