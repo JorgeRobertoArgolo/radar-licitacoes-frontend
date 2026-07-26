@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Beaker, Loader2 } from "lucide-react";
+import { ArrowLeft, Beaker, Loader2, AlertTriangle } from "lucide-react";
 
 import { useBuscarProduto } from "@/modules/Produtos/hooks/useProdutos";
 import { useAnalisarProposta } from "../hooks/useAnalise";
@@ -55,6 +55,8 @@ export default function AnalisePage() {
     });
   };
 
+  const isAmostragemInsuficiente = mutationError && !mutationError.errosDeCampo && mutationError.mensagem.toLowerCase().includes("amostra");
+
   if (isLoadingProduto) {
     return <SkeletonPage />;
   }
@@ -104,7 +106,7 @@ export default function AnalisePage() {
               placeholder="Ex: 12.50"
             />
             {errors.precoProposto && <p className="mt-1.5 text-sm font-medium text-rose-500 absolute">{errors.precoProposto?.message as string}</p>}
-            {mutationError && !mutationError.errosDeCampo && (
+            {mutationError && !mutationError.errosDeCampo && !isAmostragemInsuficiente && (
               <p className="mt-1.5 text-sm font-medium text-rose-500 absolute">{mutationError.mensagem}</p>
             )}
           </div>
@@ -122,8 +124,24 @@ export default function AnalisePage() {
         </form>
       </div>
 
+      {/* Amostragem Insuficiente */}
+      {isAmostragemInsuficiente && (
+        <div className="mt-12 bg-amber-50 border border-amber-200 rounded-2xl p-8 flex flex-col md:flex-row gap-6 items-center shadow-sm animate-in fade-in slide-in-from-bottom-4">
+          <div className="bg-white p-4 rounded-full shadow-sm text-amber-500">
+            <AlertTriangle size={40} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-amber-900 mb-2">Amostragem Insuficiente</h3>
+            <p className="text-amber-700 leading-relaxed">
+              {mutationError.mensagem || "Não há registros de compras suficientes no histórico deste produto para uma análise estatística confiável."}
+            </p>
+            <p className="mt-2 text-amber-800 font-medium">⚠️ Sugerimos a análise manual por parte do pregoeiro.</p>
+          </div>
+        </div>
+      )}
+
       {/* Resultado da Análise */}
-      {resultado && (
+      {resultado && !isAmostragemInsuficiente && (
         <AnaliseResultCard resultado={resultado} precoAnalisado={precoAnalisado} />
       )}
     </div>

@@ -146,29 +146,34 @@ export default function HomePage() {
 
         {/* Card 2: Alertas (Z-Score) */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden hover:shadow-md transition-shadow">
+          <div className="absolute top-4 right-4 bg-slate-100 text-slate-500 text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider">
+            Em breve
+          </div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-slate-500 font-medium">Alertas de Risco</h3>
-            <div className="bg-rose-50 p-2 rounded-lg text-rose-600">
+            <div className="bg-slate-50 p-2 rounded-lg text-slate-400">
               <AlertTriangle size={24} />
             </div>
           </div>
-          <div className="text-4xl font-bold text-slate-900 mb-2">0</div>
-          <p className="text-sm text-slate-500">Superfaturamentos detectados (Futuro)</p>
-          <div className="absolute bottom-0 left-0 w-full h-1 bg-rose-500"></div>
+          <div className="text-4xl font-bold text-slate-300 mb-2">--</div>
+          <p className="text-sm text-slate-400">Superfaturamentos detectados</p>
         </div>
 
         {/* Card 3: Dashboard CTA */}
-        <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 p-6 rounded-2xl shadow-sm text-white flex flex-col justify-between hover:shadow-md transition-shadow group">
+        <div className="bg-gradient-to-br from-indigo-50 to-slate-100 p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow group relative">
+          <div className="absolute top-4 right-4 bg-white border border-slate-200 text-slate-500 text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider">
+            Em breve
+          </div>
           <div>
-            <div className="flex items-center gap-2 text-indigo-100 mb-2">
+            <div className="flex items-center gap-2 text-slate-400 mb-2">
               <TrendingDown size={20} />
               <span className="font-medium">Economia Estimada</span>
             </div>
-            <div className="text-4xl font-bold mb-2">R$ 0,00</div>
-            <p className="text-sm text-indigo-200">Prevenção de gastos irregulares</p>
+            <div className="text-4xl font-bold text-slate-300 mb-2">R$ --,--</div>
+            <p className="text-sm text-slate-400">Prevenção de gastos irregulares</p>
           </div>
           
-          <Link to="/produtos" className="mt-4 flex items-center justify-between text-white hover:text-indigo-100 transition-colors">
+          <Link to="/produtos" className="mt-4 flex items-center justify-between text-indigo-500 hover:text-indigo-600 transition-colors">
             <span className="font-medium text-sm">Acessar base de dados</span>
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </Link>
