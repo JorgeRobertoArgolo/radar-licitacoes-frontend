@@ -1,4 +1,4 @@
-import { Loader2, Package, ChevronRight } from "lucide-react";
+import { Package, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { ProdutosPaginated } from "../types/produto.types";
 import { SkeletonTable } from "@/components/ui/Skeleton";
