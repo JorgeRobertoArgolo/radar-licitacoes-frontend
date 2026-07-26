@@ -6,6 +6,7 @@ import { useListarHistorico } from "../hooks/useHistorico";
 import { HistoricoChart } from "../components/HistoricoChart";
 import { HistoricoTable } from "../components/HistoricoTable";
 import { NovoHistoricoModal } from "../components/NovoHistoricoModal";
+import { SkeletonPage } from "@/components/ui/Skeleton";
 
 export default function HistoricoComprasPage() {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +20,7 @@ export default function HistoricoComprasPage() {
   const { data: historico, isLoading: isLoadingHistorico } = useListarHistorico(produtoId);
 
   if (isLoadingProduto) {
-    return <div className="p-12 text-center text-slate-500 font-medium">Carregando painel do produto...</div>;
+    return <SkeletonPage />;
   }
 
   if (!produto) {

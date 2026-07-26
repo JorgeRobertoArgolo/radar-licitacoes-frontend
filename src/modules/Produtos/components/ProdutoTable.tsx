@@ -1,6 +1,7 @@
 import { Loader2, Package, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { ProdutosPaginated } from "../types/produto.types";
+import { SkeletonTable } from "@/components/ui/Skeleton";
 
 interface ProdutoTableProps {
   data?: ProdutosPaginated;
@@ -10,6 +11,10 @@ interface ProdutoTableProps {
 }
 
 export function ProdutoTable({ data, isLoading, isError, onPageChange }: ProdutoTableProps) {
+  if (isLoading) {
+    return <SkeletonTable rows={10} cols={4} />;
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="overflow-x-auto">
@@ -23,16 +28,6 @@ export function ProdutoTable({ data, isLoading, isError, onPageChange }: Produto
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {isLoading && (
-              <tr>
-                <td colSpan={4} className="px-6 py-12 text-center">
-                  <div className="flex flex-col items-center justify-center text-indigo-600">
-                    <Loader2 className="animate-spin mb-2" size={32} />
-                    <span className="text-slate-500 font-medium">Carregando catálogo...</span>
-                  </div>
-                </td>
-              </tr>
-            )}
 
             {isError && (
               <tr>

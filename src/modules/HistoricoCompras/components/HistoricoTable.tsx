@@ -1,4 +1,5 @@
 import type { HistoricoPaginated } from "../types/historico.types";
+import { SkeletonTable } from "@/components/ui/Skeleton";
 
 // Criar utilitários rápidos se não existirem no projeto
 const formatMoeda = (valor: number) => 
@@ -15,6 +16,10 @@ interface HistoricoTableProps {
 }
 
 export function HistoricoTable({ data, isLoading }: HistoricoTableProps) {
+  if (isLoading) {
+    return <SkeletonTable rows={5} cols={5} />;
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-8">
       <div className="px-6 py-5 border-b border-slate-200 bg-slate-50">
@@ -32,12 +37,6 @@ export function HistoricoTable({ data, isLoading }: HistoricoTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {isLoading && (
-              <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-slate-500">Carregando...</td>
-              </tr>
-            )}
-            
             {!isLoading && data?.content.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-6 py-8 text-center text-slate-500">

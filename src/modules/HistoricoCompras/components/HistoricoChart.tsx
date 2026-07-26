@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { HistoricoPaginated } from "../types/historico.types";
+import { SkeletonChart } from "@/components/ui/Skeleton";
 
 interface HistoricoChartProps {
   data?: HistoricoPaginated;
@@ -8,7 +9,7 @@ interface HistoricoChartProps {
 
 export function HistoricoChart({ data, isLoading }: HistoricoChartProps) {
   if (isLoading) {
-    return <div className="h-64 flex items-center justify-center text-slate-400">Carregando gráfico...</div>;
+    return <SkeletonChart />;
   }
 
   if (!data || data.content.length === 0) {

@@ -8,6 +8,7 @@ import { useBuscarProduto } from "@/modules/Produtos/hooks/useProdutos";
 import { useAnalisarProposta } from "../hooks/useAnalise";
 import { analiseSchema, type AnaliseFormData } from "../schema/analise.schema";
 import { AnaliseResultCard } from "../components/AnaliseResultCard";
+import { SkeletonPage } from "@/components/ui/Skeleton";
 import type { AnalisePrecoResponseDTO } from "../types/analise.types";
 
 export default function AnalisePage() {
@@ -40,7 +41,7 @@ export default function AnalisePage() {
   };
 
   if (isLoadingProduto) {
-    return <div className="p-12 text-center text-slate-500 font-medium">Iniciando ambiente de análise...</div>;
+    return <SkeletonPage />;
   }
 
   if (!produto) {
