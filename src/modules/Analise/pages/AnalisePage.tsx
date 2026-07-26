@@ -55,7 +55,7 @@ export default function AnalisePage() {
     });
   };
 
-  const isAmostragemInsuficiente = mutationError && !mutationError.errosDeCampo && mutationError.mensagem.toLowerCase().includes("amostra");
+  const isAmostragemInsuficiente = resultado && resultado.mensagem.toLowerCase().includes("amostra");
 
   if (isLoadingProduto) {
     return <SkeletonPage />;
@@ -133,7 +133,7 @@ export default function AnalisePage() {
           <div>
             <h3 className="text-xl font-bold text-amber-900 mb-2">Amostragem Insuficiente</h3>
             <p className="text-amber-700 leading-relaxed">
-              {mutationError.mensagem || "Não há registros de compras suficientes no histórico deste produto para uma análise estatística confiável."}
+              {resultado?.mensagem || "Não há registros de compras suficientes no histórico deste produto para uma análise estatística confiável."}
             </p>
             <p className="mt-2 text-amber-800 font-medium">⚠️ Sugerimos a análise manual por parte do pregoeiro.</p>
           </div>
