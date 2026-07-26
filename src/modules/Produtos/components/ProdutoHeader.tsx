@@ -1,13 +1,14 @@
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, UploadCloud } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface ProdutoHeaderProps {
   onNovoProduto: () => void;
   searchTerm: string;
   onSearchSubmit: (value: string) => void;
+  onImportarCsv: () => void;
 }
 
-export function ProdutoHeader({ onNovoProduto, searchTerm, onSearchSubmit }: ProdutoHeaderProps) {
+export function ProdutoHeader({ onNovoProduto, searchTerm, onSearchSubmit, onImportarCsv }: ProdutoHeaderProps) {
   const [inputValue, setInputValue] = useState(searchTerm);
 
   // Sincroniza o valor digitado se a busca chegar através da URL (vindo da Home)
@@ -33,13 +34,23 @@ export function ProdutoHeader({ onNovoProduto, searchTerm, onSearchSubmit }: Pro
           <p className="text-slate-500 mt-1">Gerencie os itens comprados pela prefeitura e acesse o histórico.</p>
         </div>
         
-        <button 
-          onClick={onNovoProduto}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm flex items-center gap-2 transition-all cursor-pointer"
-        >
-          <Plus size={20} />
-          <span>Novo Produto</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={onImportarCsv}
+            className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-5 py-2.5 rounded-lg font-medium shadow-sm flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <UploadCloud size={20} className="text-slate-500" />
+            <span className="hidden sm:inline">Importar CSV</span>
+          </button>
+          
+          <button 
+            onClick={onNovoProduto}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <Plus size={20} />
+            <span>Novo Produto</span>
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-3 mb-6">

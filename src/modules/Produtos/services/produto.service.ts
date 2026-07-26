@@ -18,4 +18,15 @@ export const produtoService = {
     const response = await apiClient.get<ProdutoResponseDTO>(`/api/v1/radar-licitacao/produtos/${id}`);
     return response.data;
   },
+
+  importarCsv: async (file: File): Promise<{ produtosCriados: number, historicosCriados: number }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await apiClient.post("/api/v1/radar-licitacao/importacao/csv", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
+    return response.data;
+  },
 };

@@ -5,6 +5,8 @@ import { ProdutoHeader } from "../components/ProdutoHeader";
 import { ProdutoTable } from "../components/ProdutoTable";
 import { NovoProdutoModal } from "../components/NovoProdutoModal";
 
+import { ImportacaoCsvModal } from "../components/ImportacaoCsvModal";
+
 export default function ProdutosPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   
@@ -12,6 +14,7 @@ export default function ProdutosPage() {
   const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [page, setPage] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   
   // Sincroniza o termo de busca com a URL (ex: redirecionamento da Home)
   useEffect(() => {
@@ -44,6 +47,7 @@ export default function ProdutosPage() {
     <div className="p-8 max-w-7xl mx-auto">
       <ProdutoHeader 
         onNovoProduto={handleAbrirModalNovoProduto} 
+        onImportarCsv={() => setIsCsvModalOpen(true)}
         searchTerm={searchTerm}
         onSearchSubmit={handleSearchSubmit}
       />
@@ -58,6 +62,11 @@ export default function ProdutosPage() {
       <NovoProdutoModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+      />
+      
+      <ImportacaoCsvModal 
+        isOpen={isCsvModalOpen} 
+        onClose={() => setIsCsvModalOpen(false)} 
       />
     </div>
   );
