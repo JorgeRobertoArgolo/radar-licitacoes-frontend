@@ -33,7 +33,8 @@ export function NovoProdutoModal({ isOpen, onClose }: NovoProdutoModalProps) {
   useEffect(() => {
     if (error && error.errosDeCampo) {
       error.errosDeCampo.forEach((err) => {
-        setError(err.campo as keyof ProdutoFormData, {
+        const camelCampo = err.campo.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        setError(camelCampo as keyof ProdutoFormData, {
           type: "server",
           message: err.mensagem,
         });

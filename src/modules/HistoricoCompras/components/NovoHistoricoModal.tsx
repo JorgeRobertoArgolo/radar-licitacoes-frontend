@@ -36,7 +36,8 @@ export function NovoHistoricoModal({ isOpen, onClose, produtoId }: NovoHistorico
   useEffect(() => {
     if (error && error.errosDeCampo) {
       error.errosDeCampo.forEach((err) => {
-        setError(err.campo as keyof HistoricoFormData, {
+        const camelCampo = err.campo.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        setError(camelCampo as keyof HistoricoFormData, {
           type: "server",
           message: err.mensagem,
         });

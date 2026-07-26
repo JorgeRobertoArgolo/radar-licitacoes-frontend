@@ -9,6 +9,7 @@ import { useAnalisarProposta } from "../hooks/useAnalise";
 import { analiseSchema, type AnaliseFormData } from "../schema/analise.schema";
 import { AnaliseResultCard } from "../components/AnaliseResultCard";
 import { SkeletonPage } from "@/components/ui/Skeleton";
+import { NotFoundState } from "@/components/ui/NotFoundState";
 import type { AnalisePrecoResponseDTO } from "../types/analise.types";
 
 export default function AnalisePage() {
@@ -24,10 +25,24 @@ export default function AnalisePage() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<AnaliseFormData>({
     resolver: zodResolver(analiseSchema) as any,
   });
+
+  useEffect(() => {
+    if (mutationError && mutationError.errosDeCampo) {
+      mutationError.errosDeCampo.forEach((err) => {
+        // Converte snake_case para camelCase se o backend mandar snake_case
+        const camelCampo = err.campo.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        setError(camelCampo as keyof AnaliseFormData, {
+          type: "server",
+          message: err.mensagem,
+        });
+      });
+    }
+  }, [mutationError, setError]);
 
   const onSubmit = (data: any) => {
     setResultado(null);
@@ -45,7 +60,12 @@ export default function AnalisePage() {
   }
 
   if (!produto) {
-    return <div className="p-12 text-center text-rose-500 font-medium">Produto não encontrado. (404)</div>;
+    return (
+      <NotFoundState 
+        title="Produto não encontrado" 
+        message="Não foi possível iniciar a Análise pois este produto não consta em nosso catálogo." 
+      />
+    );
   }
 
   return (

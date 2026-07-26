@@ -7,6 +7,7 @@ import { HistoricoChart } from "../components/HistoricoChart";
 import { HistoricoTable } from "../components/HistoricoTable";
 import { NovoHistoricoModal } from "../components/NovoHistoricoModal";
 import { SkeletonPage } from "@/components/ui/Skeleton";
+import { NotFoundState } from "@/components/ui/NotFoundState";
 
 export default function HistoricoComprasPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,7 +25,12 @@ export default function HistoricoComprasPage() {
   }
 
   if (!produto) {
-    return <div className="p-12 text-center text-rose-500 font-medium">Produto não encontrado. (404)</div>;
+    return (
+      <NotFoundState 
+        title="Produto não encontrado" 
+        message="O produto que você tentou acessar não existe em nossa base de dados. Verifique a URL ou pesquise novamente." 
+      />
+    );
   }
 
   return (
