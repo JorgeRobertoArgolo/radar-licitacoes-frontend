@@ -6,13 +6,16 @@ interface GaugeIndicatorProps {
 }
 
 export function GaugeIndicator({ escoreZ, risco }: GaugeIndicatorProps) {
+  // Se for nulo (desvio padrão zero), a visualização da agulha vai pro máximo de risco se houver risco, ou pro meio (0) se for seguro.
+  const zValue = escoreZ != null ? escoreZ : (risco ? 5 : 0);
+
   // Limites do Z-Score para o radar visual
   // -3 a +2 (Normal/Seguro). > +2 (Risco)
   const minZ = -3;
   const maxZ = 5;
   
   // Limita o valor visual para não quebrar o layout
-  const zVisual = Math.max(minZ, Math.min(escoreZ, maxZ));
+  const zVisual = Math.max(minZ, Math.min(zValue, maxZ));
   
   // Calcula porcentagem da barra (0% = minZ, 100% = maxZ)
   const percentage = ((zVisual - minZ) / (maxZ - minZ)) * 100;
@@ -52,7 +55,7 @@ export function GaugeIndicator({ escoreZ, risco }: GaugeIndicatorProps) {
         {risco ? <AlertTriangle size={28} className="text-rose-600" /> : <ShieldCheck size={28} className="text-emerald-600" />}
         <div>
           <p className="font-bold text-lg">{risco ? 'Atenção Crítica: Risco de Superfaturamento' : 'Preço Seguro: Dentro da Anormalidade Aceitável'}</p>
-          <p className="text-sm opacity-90">Escore-Z calculado: <strong>{escoreZ.toFixed(2)}</strong></p>
+          <p className="text-sm opacity-90">Escore-Z calculado: <strong>{escoreZ != null ? escoreZ.toFixed(2) : 'N/A (Desvio Padrão 0)'}</strong></p>
         </div>
       </div>
     </div>

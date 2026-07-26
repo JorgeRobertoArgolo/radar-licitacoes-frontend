@@ -43,7 +43,7 @@ export function AnaliseResultCard({ resultado, precoAnalisado }: AnaliseResultCa
         <h4 className="font-medium text-slate-700 mb-4 flex justify-between items-center">
           <span>Mapa de Risco (Escore-Z)</span>
           <span className="text-xs text-slate-500 bg-white px-2.5 py-1 rounded-md shadow-sm border border-slate-200 font-medium">
-            Probabilidade: {(resultado.probabilidade * 100).toFixed(1)}%
+            Probabilidade: {resultado.probabilidade != null ? `${(resultado.probabilidade * 100).toFixed(1)}%` : 'N/A'}
           </span>
         </h4>
         
