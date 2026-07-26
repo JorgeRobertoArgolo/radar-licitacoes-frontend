@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useListarProdutos } from "../hooks/useProdutos";
 import { ProdutoHeader } from "../components/ProdutoHeader";
@@ -13,38 +13,26 @@ export default function ProdutosPage() {
   const [page, setPage] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  // Solicitamos 100 itens apenas para que o filtro visual funcione bem localmente,
-  // já que o backend não possui um endpoint de busca por nome nativo.
-  const size = 100;
+  // Sincroniza o termo de busca com a URL (ex: redirecionamento da Home)
+  useEffect(() => {
+    const searchFromUrl = searchParams.get("search") || "";
+    setSearchTerm(searchFromUrl);
+    // Também reinicia a paginação caso a busca mude pela URL
+    setPage(0);
+  }, [searchParams]);
+  
+  const size = 10;
 
-  // Lógica (Dados / Rede)
-  const { data, isLoading, isError } = useListarProdutos(page, size);
-
-  // Filtragem local
-  const filteredData = useMemo(() => {
-    if (!data) return undefined;
-    if (!searchTerm) return data;
-    
-    const lowerSearch = searchTerm.toLowerCase();
-    const filteredContent = data.content.filter(p => 
-      p.nome.toLowerCase().includes(lowerSearch)
-    );
-    
-    return {
-      ...data,
-      content: filteredContent,
-    };
-  }, [data, searchTerm]);
+  // Lógica (Dados / Rede) passando o searchTerm para o backend
+  const { data, isLoading, isError } = useListarProdutos(page, size, searchTerm);
 
   // Atualiza a URL e o estado apenas ao clicar no botão
   const handleSearchSubmit = (value: string) => {
-    setSearchTerm(value);
     if (value) {
       setSearchParams({ search: value });
     } else {
       setSearchParams({});
     }
-    setPage(0); // Volta pra primeira página ao buscar
   };
 
   // Ação da página
@@ -61,7 +49,7 @@ export default function ProdutosPage() {
       />
       
       <ProdutoTable 
-        data={filteredData} 
+        data={data} 
         isLoading={isLoading} 
         isError={isError} 
         onPageChange={(novaPag) => setPage(novaPag)} 

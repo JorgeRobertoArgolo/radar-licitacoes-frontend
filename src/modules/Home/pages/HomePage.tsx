@@ -1,14 +1,36 @@
-import { Search, AlertTriangle, PackageSearch, TrendingDown, ArrowRight } from "lucide-react";
+import { Search, AlertTriangle, PackageSearch, TrendingDown, ArrowRight, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useListarProdutos } from "@/modules/Produtos/hooks/useProdutos";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedValue, setDebouncedValue] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Vamos usar o hook existente apenas para extrair a métrica global (Total de Produtos da API)
-  const { data, isLoading } = useListarProdutos(0, 1);
+  // Debounce para não floodar a API
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(searchValue);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchValue]);
+
+  // Hook para a busca rápida (Autocomplete)
+  const { data: searchResults, isLoading: isSearchLoading } = useListarProdutos(0, 5, debouncedValue);
+  
+  // Vamos usar o hook existente para extrair a métrica global (Total de Produtos da API) sem filtro
+  const { data: globalData, isLoading: isGlobalLoading } = useListarProdutos(0, 1);
+
+  // Controle de abertura do Autocomplete
+  useEffect(() => {
+    if (debouncedValue.trim().length > 0) {
+      setIsDropdownOpen(true);
+    } else {
+      setIsDropdownOpen(false);
+    }
+  }, [debouncedValue]);
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -18,14 +40,16 @@ export default function HomePage() {
         <p className="text-lg text-slate-500">O seu centro de inteligência e auditoria de compras públicas.</p>
       </div>
 
-      {/* Caixa de Busca Principal (Placeholder do Autocomplete) */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-10 text-center relative overflow-hidden">
-        {/* Efeito visual sutil no fundo */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-50 rounded-full blur-3xl opacity-60"></div>
+      {/* Caixa de Busca Principal (Autocomplete) */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-10 text-center relative">
+        {/* Efeito visual sutil no fundo isolado para não dar overflow no dropdown */}
+        <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-50 rounded-full blur-3xl opacity-60"></div>
+        </div>
         
         <h2 className="text-2xl font-semibold text-slate-800 mb-6 relative z-10">Qual item deseja auditar hoje?</h2>
         
-        <div className="max-w-2xl mx-auto relative group z-10">
+        <div className="max-w-2xl mx-auto relative group z-20">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Search className="text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={24} />
           </div>
@@ -33,8 +57,16 @@ export default function HomePage() {
             type="text"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            onFocus={() => {
+              if (searchValue.trim().length > 0) setIsDropdownOpen(true);
+            }}
+            onBlur={() => {
+              // Pequeno delay para permitir o clique no item do dropdown antes de fechar
+              setTimeout(() => setIsDropdownOpen(false), 200);
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && searchValue.trim()) {
+                setIsDropdownOpen(false);
                 navigate(`/produtos?search=${encodeURIComponent(searchValue.trim())}`);
               }
             }}
@@ -51,12 +83,52 @@ export default function HomePage() {
           >
             Buscar
           </button>
+
+          {/* Lista Autocomplete */}
+          {isDropdownOpen && (
+            <div className="absolute top-full mt-2 left-0 right-0 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-30 text-left">
+              {isSearchLoading ? (
+                <div className="p-4 text-center text-slate-500 flex items-center justify-center gap-2">
+                  <Loader2 className="animate-spin text-indigo-500" size={20} />
+                  Buscando...
+                </div>
+              ) : searchResults?.content && searchResults.content.length > 0 ? (
+                <ul>
+                  {searchResults.content.map((produto) => (
+                    <li key={produto.id}>
+                      <button
+                        className="w-full text-left px-4 py-3 hover:bg-indigo-50 border-b border-slate-100 last:border-0 transition-colors flex flex-col"
+                        onClick={() => navigate(`/produtos/${produto.id}`)}
+                      >
+                        <span className="font-medium text-slate-800">{produto.nome}</span>
+                        <span className="text-xs text-slate-500">Unidade: {produto.unidadeMedida}</span>
+                      </button>
+                    </li>
+                  ))}
+                  {searchResults.totalElements > 5 && (
+                    <li>
+                      <button
+                        className="w-full text-center px-4 py-3 bg-slate-50 hover:bg-slate-100 text-indigo-600 text-sm font-medium transition-colors"
+                        onClick={() => navigate(`/produtos?search=${encodeURIComponent(searchValue.trim())}`)}
+                      >
+                        Ver todos os resultados...
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              ) : (
+                <div className="p-4 text-center text-slate-500">
+                  Nenhum produto encontrado.
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <p className="text-sm text-slate-400 mt-4 relative z-10">Digite o nome do produto para buscar o histórico e rodar a malha fina.</p>
       </div>
 
       {/* Cards de KPIs (Métricas Globais) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
         
         {/* Card 1: Contagem de Produtos */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
@@ -67,7 +139,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="text-4xl font-bold text-slate-900 mb-2">
-            {isLoading ? "..." : data?.totalElements || 0}
+            {isGlobalLoading ? "..." : globalData?.totalElements || 0}
           </div>
           <p className="text-sm text-slate-500">Total de itens mapeados na base</p>
         </div>

@@ -2,9 +2,9 @@ import { apiClient } from "@/api/client";
 import type { ProdutoRequestDTO, ProdutoResponseDTO, ProdutosPaginated } from "../types/produto.types";
 
 export const produtoService = {
-  listarProdutos: async (page = 0, size = 10): Promise<ProdutosPaginated> => {
+  listarProdutos: async (page = 0, size = 10, nome?: string): Promise<ProdutosPaginated> => {
     const response = await apiClient.get<ProdutosPaginated>("/api/v1/radar-licitacao/produtos", {
-      params: { page, size },
+      params: { page, size, ...(nome && { nome }) },
     });
     return response.data;
   },
